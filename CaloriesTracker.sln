@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30711.63
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaloriesTracker.WebForms", "CaloriesTracker.WebForms\CaloriesTracker.WebForms.csproj", "{35FB9193-E846-4854-8E80-B947FB02BD42}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{35FB9193-E846-4854-8E80-B947FB02BD42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35FB9193-E846-4854-8E80-B947FB02BD42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35FB9193-E846-4854-8E80-B947FB02BD42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35FB9193-E846-4854-8E80-B947FB02BD42}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D0493F6F-E6A7-4337-B75B-460A32B2363B}
+	EndGlobalSection
+EndGlobal
