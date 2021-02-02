@@ -2,24 +2,21 @@
 using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using CaloriesTracker.WebForms.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace CaloriesTracker.WebForms
 {
     public partial class _Default : Page
     {
+        private CaloriesTrackerService service = new CaloriesTrackerService();
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                using (var caloriesContext = new CaloriesContext())
-                {
-                    foodDropDown.DataSource = caloriesContext.Food.ToList();
-                    exerciseDropDown.DataSource = caloriesContext.Exercises.ToList();
+                foodDropDown.DataSource = service.GetFood();
+                exerciseDropDown.DataSource = service.GetExercises();
 
-                    DisplayDiary(caloriesContext);
-                }
+                DisplayDiary();
 
                 Page.DataBind();
             }
@@ -27,20 +24,14 @@ namespace CaloriesTracker.WebForms
 
         protected void ShowData(object sender, CommandEventArgs e)
         {
-            using (var caloriesContext = new CaloriesContext())
-            {
-                DisplayDiary(caloriesContext);
-            }
+            DisplayDiary();
         }
 
-        private void DisplayDiary(CaloriesContext caloriesContext)
+        private void DisplayDiary()
         {
             var date = string.IsNullOrEmpty(dateTextBox.Text) ? DateTime.Today : DateTime.Parse(dateTextBox.Text);
 
-            var list = caloriesContext.CalorieDiaries
-                .Where(diary => diary.AddedAt == date).Include(d => d.Food)
-                .Include(d => d.Exercise)
-                .OrderByDescending(diary => diary.Id).ToList();
+            var list = service.GetDailyList(date);
             diaryGridView.DataSource = list;
 
             var totalConsumed = list.Sum(d => d.Food?.Calories);
@@ -54,48 +45,29 @@ namespace CaloriesTracker.WebForms
 
         protected void AddFoodClicked(object sender, CommandEventArgs e)
         {
-            using (var caloriesContext = new CaloriesContext())
-            {
-                var date = string.IsNullOrEmpty(dateTextBox.Text) ? DateTime.Today : DateTime.Parse(dateTextBox.Text);
+            var date = string.IsNullOrEmpty(dateTextBox.Text) ? DateTime.Today : DateTime.Parse(dateTextBox.Text);
 
-                caloriesContext.CalorieDiaries.Add(new CalorieDiary()
-                {
-                    AddedAt = date,
-                    FoodId = int.Parse(foodDropDown.SelectedValue)
-                });
-                caloriesContext.SaveChanges();
+            service.AddFood(int.Parse(foodDropDown.SelectedValue), date);
 
-                DisplayDiary(caloriesContext);
-            }
+            DisplayDiary();
         }
 
         protected void AddExerciseClicked(object sender, CommandEventArgs e)
         {
-            using (var caloriesContext = new CaloriesContext())
-            {
-                var date = string.IsNullOrEmpty(dateTextBox.Text) ? DateTime.Today : DateTime.Parse(dateTextBox.Text);
+            var date = string.IsNullOrEmpty(dateTextBox.Text) ? DateTime.Today : DateTime.Parse(dateTextBox.Text);
 
-                caloriesContext.CalorieDiaries.Add(new CalorieDiary
-                {
-                    AddedAt = date,
-                    ExerciseId = int.Parse(exerciseDropDown.SelectedValue)
-                });
-                caloriesContext.SaveChanges();
+            service.AddExercise(int.Parse(exerciseDropDown.SelectedValue), date);
 
-                DisplayDiary(caloriesContext);
-            }
+            DisplayDiary();
         }
 
         protected void DiaryDeleting(object sender, GridViewDeleteEventArgs e)
         {
-            using (var caloriesContext = new CaloriesContext())
-            {
-                var id = (int)e.Keys[0];
-                caloriesContext.CalorieDiaries.Remove(new CalorieDiary { Id = id });
-                caloriesContext.SaveChanges();
+            var id = (int) e.Keys[0];
 
-                DisplayDiary(caloriesContext);
-            }
+            service.DeleteRecord(id);
+
+            DisplayDiary();
         }
     }
 }

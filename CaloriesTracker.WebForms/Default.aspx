@@ -41,8 +41,7 @@
                 </Columns>
             </asp:GridView>
             
-            <h3>Total Consumed: <asp:Label runat="server" ID="totalConsumedLabel" ></asp:Label></h3>
-            <h3>Total Burned: <asp:Label runat="server" ID="totalBurnedLabel" ></asp:Label></h3>
+            <h3>Total Consumed: <asp:Label runat="server" ID="totalConsumedLabel" ></asp:Label> Total Burned: <asp:Label runat="server" ID="totalBurnedLabel" ></asp:Label></h3>
         </div>
     </div>
 
