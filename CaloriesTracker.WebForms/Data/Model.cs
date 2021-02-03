@@ -46,22 +46,4 @@ namespace CaloriesTracker.WebForms.Data
         public string Name { get; set; }
         public int Calories { get; set; }
     }
-
-    //public class CalorieDiaryFood
-    //{
-    //    public int FoodId { get; set; }
-    //    public Food Food { get; set; }
-        
-    //    public int CalorieDiaryId { get; set; }
-    //    public CalorieDiary CalorieDiary { get; set; }
-    //}
-
-    //public class CalorieDiaryExercise
-    //{
-    //    public int ExerciseId { get; set; }
-    //    public Exercise Exercise { get; set; }
-        
-    //    public int CalorieDiaryId { get; set; }
-    //    public CalorieDiary CalorieDiary { get; set; }
-    //}
 }
