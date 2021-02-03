@@ -1,0 +1,142 @@
+﻿@page "/caloriestracking"
+
+@using CaloriesTracker.Blazor.Data
+@inject CaloriesTrackerService CaloriesTrackerService
+
+@if (!initialized)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Daily consumed and burned calories</h1>
+            <br />
+
+            <EditForm Model="@changeDateModel" OnValidSubmit="@FilterByDate">
+                Showing data for:
+                <InputDate @bind-Value="changeDateModel.FilterDate" />
+                <button type="submit" class="btn btn-primary">Show</button>
+            </EditForm>
+
+            <br />
+            <br />
+
+            @if (dailyList.Count != 0)
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Description</td>
+                            <td>Calories</td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in dailyList)
+                        {
+                            <tr>
+                                <td>@(item.Exercise?.Name ?? item.Food.Name)</td>
+                                <td>@(-item.Exercise?.Calories ?? item.Food.Calories)</td>
+                                <td><button @onclick="@(e => DeleteRecord(item.Id))" class="btn btn-danger">Delete</button></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <h3>Total Consumed: @dailyList.Sum(d => d.Food?.Calories) Total Burned: @dailyList.Sum(d => d.Exercise?.Calories)</h3>
+            }
+            else
+            {
+                <h3>No Records Found</h3>
+            }
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Add Food</h2>
+
+            <EditForm Model="addItemModel" OnValidSubmit="@HandleAddFoodValidSubmit">
+                Select Food:
+                <InputSelect @bind-Value="addItemModel.FoodId" style="width: 150px">
+                    @foreach (var value in food)
+                        {
+                        <option value="@value.Id">@value.Name</option>
+                        }
+                </InputSelect>
+                <button type="submit" class="btn btn-secondary">Add</button>
+            </EditForm>
+        </div>
+        <div class="col-md-6">
+            <h2>Add Exercise</h2>
+
+            <EditForm Model="addItemModel" OnValidSubmit="@HandleAddExerciseValidSubmit">
+                Select Food:
+                <InputSelect @bind-Value="addItemModel.ExerciseId" style="width: 150px">
+                    @foreach (var value in exercises)
+                        {
+                        <option value="@value.Id">@value.Name</option>
+                        }
+                </InputSelect>
+                <button type="submit" class="btn btn-secondary">Add</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    private bool initialized = false;
+
+    private List<Food> food;
+    private List<Exercise> exercises;
+    private List<CalorieDiary> dailyList;
+
+    AddItemModel addItemModel = new AddItemModel();
+    ChangeDateModel changeDateModel = new ChangeDateModel { FilterDate = DateTime.Today };
+
+    protected override void OnInitialized()
+    {
+        food = CaloriesTrackerService.GetFood();
+        exercises = CaloriesTrackerService.GetExercises();
+        dailyList = CaloriesTrackerService.GetDailyList(changeDateModel.FilterDate);
+
+        initialized = true;
+    }
+
+    private void DeleteRecord(int id)
+    {
+        CaloriesTrackerService.DeleteRecord(id);
+        dailyList = CaloriesTrackerService.GetDailyList(changeDateModel.FilterDate);
+    }
+
+    private void FilterByDate()
+    {
+        dailyList = CaloriesTrackerService.GetDailyList(changeDateModel.FilterDate);
+    }
+
+    private void HandleAddFoodValidSubmit()
+    {
+        CaloriesTrackerService.AddFood(addItemModel.FoodId, changeDateModel.FilterDate);
+        dailyList = CaloriesTrackerService.GetDailyList(changeDateModel.FilterDate);
+        addItemModel.FoodId = -1;
+    }
+
+    private void HandleAddExerciseValidSubmit()
+    {
+        CaloriesTrackerService.AddExercise(addItemModel.ExerciseId, changeDateModel.FilterDate);
+        dailyList = CaloriesTrackerService.GetDailyList(changeDateModel.FilterDate);
+        addItemModel.ExerciseId = -1;
+    }
+
+    class AddItemModel
+    {
+        public int FoodId { get; set; }
+        public int ExerciseId { get; set; }
+    }
+
+    class ChangeDateModel
+    {
+        public DateTime FilterDate { get; set; }
+    }
+}
