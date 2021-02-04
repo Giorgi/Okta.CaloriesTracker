@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Okta.AspNetCore;
 
 namespace CaloriesTracker.Blazor
 {
@@ -26,6 +28,21 @@ namespace CaloriesTracker.Blazor
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OktaDefaults.MvcAuthenticationScheme;
+            })
+            .AddCookie()
+            .AddOktaMvc(new OktaMvcOptions
+            {
+                PostLogoutRedirectUri = Configuration["Okta:PostLogoutRedirectUri"],
+                OktaDomain = Configuration["Okta:Domain"],
+                ClientId = Configuration["Okta:ClientId"],
+                ClientSecret = Configuration["Okta:ClientSecret"]
+            });
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
@@ -50,6 +67,9 @@ namespace CaloriesTracker.Blazor
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

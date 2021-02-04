@@ -1,0 +1,11 @@
+﻿@inject NavigationManager NavigationManager
+
+<AuthorizeView>
+    <Authorized>
+        <span>Hello, @context.User.Identity.Name!</span>
+        <a href="logout">Log out</a>
+    </Authorized>
+    <NotAuthorized>
+        <a href="login?redirectUri=@(NavigationManager.Uri)">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>
